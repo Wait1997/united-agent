@@ -8,6 +8,14 @@ import time
 import shutil
 
 ONE_DAY = 24 * 60 * 60
+allowed_extensions = {
+    # 文档文件
+    '.txt', '.docx', '.md', '.xlsx', '.pdf', '.pptx',
+    # 图片文件
+    '.jpg', '.jpeg', '.png', '.gif', '.bmp',
+    # 视频文件
+    '.mp4', '.mkv', '.avi', '.mov', '.wmv'
+}
 
 
 class RecentDays(BaseModel):
@@ -32,14 +40,37 @@ def get_unused_files_and_folders(desktop_path: str, days: int = 10) -> List[str]
     # 获取指定目录下的文件以及文件夹
     for item in os.listdir(desktop_path):
         item_path = os.path.join(desktop_path, item)
-        if not os.path.exists(item_path):  # 确保路径存在
-            continue
 
-        # 指定文件或目录的最后访问时间 单位s
-        last_access_time = os.path.getatime(item_path)
+        # 处理文件
+        if os.path.isfile(item_path):
+            file_extension = os.path.splitext(item)[1].lower()  # 获取文件扩展名并转为小写
+            if file_extension in allowed_extensions:
+                if not os.path.exists(item_path):  # 确保路径存在
+                    continue
+                # 指定文件或目录的最后访问时间 单位s
+                # last_access_time = os.path.getatime(item_path)
+                # 修改时间 (getmtime) 更新的时机是文件内容发生了变更
+                last_modify_time = os.path.getmtime(item_path)
+                date = time.localtime(last_modify_time)
+                format_date = time.strftime('%Y-%m-%d %H:%M:%S', date)
+                print(format_date, item_path)
 
-        if last_access_time < cutoff_time:
-            unused_items.append(item_path)
+                if last_modify_time < cutoff_time:
+                    unused_items.append(item_path)
+        # 处理文件夹
+        if os.path.isdir(item_path):
+            if not os.path.exists(item_path):  # 确保路径存在
+                continue
+            # 指定文件或目录的最后访问时间 单位s
+            # last_access_time = os.path.getatime(item_path)
+            # 修改时间 (getmtime) 更新的时机是文件内容发生了变更
+            last_modify_time = os.path.getmtime(item_path)
+            date = time.localtime(last_modify_time)
+            format_date = time.strftime('%Y-%m-%d %H:%M:%S', date)
+            print(format_date, item_path)
+
+            if last_modify_time < cutoff_time:
+                unused_items.append(item_path)
 
     return unused_items
 

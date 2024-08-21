@@ -1,11 +1,14 @@
 env
-# .env
+.env
 *.pyc
 __pycache__
 
 .idea
 .vscode
 .DS_Store
+
+start_assistant.py
+flowy.dll
 
 build/*
 dist/*
