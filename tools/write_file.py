@@ -25,7 +25,7 @@ def create_folder_on_desktop(folder_name: Optional[str] = None) -> str:
     elif os_type == "Darwin":  # macOS 的系统名称是 "Darwin"
         desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
     else:
-        raise OSError("Unsupported operating system")
+        raise EnvironmentError("Unsupported operating system")
 
     # 创建文件夹路径
     folder_path = os.path.join(desktop_path, folder_name)
@@ -55,8 +55,11 @@ class WriteFilesTool(BaseTool):
 
         # 文件夹的名称
         folder_name = 'workspace'
-        # 获取桌面文件夹路径
-        current_path = create_folder_on_desktop(folder_name)
+        try:
+            # 获取桌面文件夹路径
+            current_path = create_folder_on_desktop(folder_name)
+        except EnvironmentError:
+            return 'Unsupported operating system'
         # 创建并写入内容到 .md 文件
         file_path = os.path.join(current_path, filename)
         with open(file_path, 'w', encoding='utf-8') as f:

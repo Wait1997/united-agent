@@ -19,8 +19,7 @@ from tools import (
     recover_volume,
     open_calc,
     open_application,
-    organize_files,
-    add_note
+    organize_files
 )
 from utils import transform_messages_type, ChatMessage
 
@@ -154,5 +153,6 @@ if __name__ == '__main__':
     # result = agent_with_chat_history.invoke({'input': '帮我把 Visual Studio Code 打开,并且系统的亮度设置到50'})
     # result = agent_with_chat_history.invoke({'input': '帮我写一份pytorch简单的使用教程，需要把内容写到指定的markdown文件中'})
     # result = agent_with_chat_history.invoke({'input': '帮我把系统音量调小', 'chat_history': []})
-    result = agent_with_chat_history.invoke({'input': '帮我整理最近7天未使用的文件', 'chat_history': []})
+    # result = agent_with_chat_history.invoke({'input': '帮我整理最近7天未使用的文件', 'chat_history': []})
+    result = agent_with_chat_history.invoke({'input': '帮我把计算器打开', 'chat_history': []})
     print(result['output'])

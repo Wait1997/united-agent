@@ -1,7 +1,12 @@
 import platform
-from typing import Literal, List
+import re
+import os
+from dotenv import load_dotenv, find_dotenv
+from typing import Literal, List, Union, Dict
 from pydantic import BaseModel, Field
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
+
+load_dotenv(find_dotenv())
 
 
 class ChatMessage(BaseModel):
@@ -51,10 +56,26 @@ ZHIPU_MODEL = ['glm-4', 'glm-4-0520', 'glm-4-air']
 QWEN_MODEL = ['qwen-max', 'qwen-long', 'qwen-plus', 'qwen-turbo', 'qwen2-72b-instruct']
 
 
-def add_model(model_name: str):
-    pass
-
-
-def change_model(model_name: str):
+def change_model(model_name: str) -> Union[Dict[str, str], None]:
     """根据模型的name 切换模型"""
-    pass
+
+    pattern_glm = r'^glm\w+$'
+    pattern_qwen = r'^qwen\w+$'
+
+    if re.match(pattern_glm, model_name):
+        # 匹配到glm-llm
+        return {
+            'model': model_name,
+            'api_key': os.environ['ZHIPUAI_API_KEY'],
+            'base_url': 'https://open.bigmodel.cn/api/paas/v4/'
+        }
+
+    if re.match(pattern_qwen, model_name):
+        # 匹配到qwen-llm
+        return {
+            'model': model_name,
+            'api_key': '',
+            'base_url': ''
+        }
+
+    return None

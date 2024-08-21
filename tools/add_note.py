@@ -31,7 +31,7 @@ def add_note(title: str, content: str):
         return '备忘录打开了并且写入完成了'
 
     elif os_type == 'Windows':
-        pass
+        return '便笺还不能打开'
 
     else:
         return 'Unsupported platform'
