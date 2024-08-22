@@ -79,3 +79,21 @@ def change_model(model_name: str) -> Union[Dict[str, str], None]:
         }
 
     return None
+
+
+def write_docx(doc_path: str, doc_content: str):
+    from docx import Document
+    from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
+    # from docx.shared import Cm, RGBColor, Pt
+
+    doc = Document()
+
+    """添加标题"""
+    # para_head = doc.add_heading("标题", level=1)  # level代表标题级别
+    # para_head.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER  # 标题居中
+
+    """添加正文段落"""
+    doc.add_paragraph(doc_content)
+
+    """保存文档"""
+    doc.save(doc_path)

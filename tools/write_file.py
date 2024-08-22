@@ -1,4 +1,5 @@
 import os
+import re
 import platform
 from typing import Optional, Type
 
@@ -8,6 +9,10 @@ from langchain.callbacks.manager import (
     AsyncCallbackManagerForToolRun,
     CallbackManagerForToolRun,
 )
+from utils import write_docx
+
+# write file suffix
+file_suffix = ['.txt', '.md', '.docx']
 
 
 # 创建一个桌面文件夹
@@ -51,7 +56,10 @@ class WriteFilesTool(BaseTool):
     def _run(
         self, filename: str, file_content: str, run_manager: Optional[CallbackManagerForToolRun] = None
     ) -> str:
-        """Write the file contents to the file."""
+        """
+        Write the file content into the file according to the file path.
+        The written file suffix format is .txt, .md, or .docx.
+        """
 
         # 文件夹的名称
         folder_name = 'workspace'
@@ -60,12 +68,24 @@ class WriteFilesTool(BaseTool):
             current_path = create_folder_on_desktop(folder_name)
         except EnvironmentError:
             return 'Unsupported operating system'
-        # 创建并写入内容到 .md 文件
-        file_path = os.path.join(current_path, filename)
-        with open(file_path, 'w', encoding='utf-8') as f:
-            f.write(file_content)
 
-        return "The file has been written successfully."
+        match = re.search(r'\.([a-zA-Z0-9]+)$', filename)
+        if match:
+            suffix = match.group().lower()
+            if suffix in file_suffix:
+                if suffix == '.md' or suffix == '.txt':
+                    # 创建并写入内容到 .md 文件
+                    file_path = os.path.join(current_path, filename)
+                    with open(file_path, 'w', encoding='utf-8') as f:
+                        f.write(file_content)
+                elif suffix == '.docx':
+                    file_path = os.path.join(current_path, filename)
+                    write_docx(file_path, file_content)
+                return 'File writing completed.'
+            else:
+                return f'The current file format is not supported.'
+        else:
+            return 'Not a valid file name.'
 
     async def _arun(
         self,

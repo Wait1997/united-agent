@@ -154,5 +154,9 @@ if __name__ == '__main__':
     # result = agent_with_chat_history.invoke({'input': '帮我写一份pytorch简单的使用教程，需要把内容写到指定的markdown文件中'})
     # result = agent_with_chat_history.invoke({'input': '帮我把系统音量调小', 'chat_history': []})
     # result = agent_with_chat_history.invoke({'input': '帮我整理最近7天未使用的文件', 'chat_history': []})
-    result = agent_with_chat_history.invoke({'input': '帮我把计算器打开', 'chat_history': []})
+    # result = agent_with_chat_history.invoke({'input': '帮我把计算器打开', 'chat_history': []})
+    result = agent_with_chat_history.invoke({
+        'input': '帮我介绍一下google公司，需要800字左右；并且要求你按照word文档的格式写入到文件中，输入的内容能够符合正常word文档的规范',
+        'chat_history': []}
+    )
     print(result['output'])

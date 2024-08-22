@@ -43,7 +43,7 @@ def get_unused_files_and_folders(desktop_path: str, days: int = 10) -> List[str]
 
         # 处理文件
         if os.path.isfile(item_path):
-            file_extension = os.path.splitext(item)[1].lower()  # 获取文件扩展名并转为小写
+            file_extension = os.path.splitext(item)[-1].lower()  # 获取文件扩展名并转为小写
             if file_extension in allowed_extensions:
                 if not os.path.exists(item_path):  # 确保路径存在
                     continue
