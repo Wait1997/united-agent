@@ -73,7 +73,7 @@ def change_model(model_name: str) -> Union[Dict[str, str], None]:
     if re.match(pattern_qwen, model_name):
         # 匹配到qwen-llm
         return {
-            'model': model_name,
+            'model': '',
             'api_key': '',
             'base_url': ''
         }
