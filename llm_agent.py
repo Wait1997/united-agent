@@ -79,17 +79,17 @@ def executor_llm_agent(
         llm = ChatOpenAI(
             temperature=temperature,
             model=model,
-            openai_api_key=zhipu_key,
-            openai_api_base=openai_api_base,
+            api_key=zhipu_key,
+            base_url=openai_api_base,
             streaming=streaming,
             callback_manager=CallbackManager([StreamingStdOutCallbackHandler()])
         )
     else:
         llm = ChatOpenAI(
-            temperature=0.95,
+            temperature=temperature,
             model=model,
-            openai_api_key=zhipu_key,
-            openai_api_base=openai_api_base
+            api_key=zhipu_key,
+            base_url=openai_api_base
         )
 
     # agent = create_react_agent(llm, tools, prompt)

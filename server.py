@@ -11,9 +11,13 @@ from langdetect import detect
 from pydantic import BaseModel, Field
 from typing import Literal, Optional, List, Union
 
+from run_assistant import init_flowy_env, chat_with_agents, add_model
 from llm_agent import stdout_result
+import asyncio
 
 model_name = 'glm-4'
+# 从agent输出的内容
+stream_out_content = ''
 
 app = FastAPI()
 
@@ -78,6 +82,14 @@ class ChatCompletionResponse(BaseModel):
     created: Optional[int] = Field(default_factory=lambda: int(time.time()))
 
 
+class ChatAgent(BaseModel):
+    flowy: bool = True
+    query: str
+    history_messages: List[ChatMessage]
+    model: str = model_name,
+    temperature: Optional[float] = None
+    stream: Optional[bool] = True
+
 # 判断语言
 def detect_language(text):
     lang = detect(text)
@@ -85,6 +97,40 @@ def detect_language(text):
         return True
     else:
         return False
+
+
+# 处理 agent invoke
+def selected_executor_agent(option: ChatAgent):
+    global stream_out_content
+
+    if option.flowy:
+        init_flowy_env()
+        mid = add_model(
+            "deepseek-chat",
+            "https://api.deepseek.com",
+            "sk-8f229cb93e78416e96430020d260f2b7"
+        )
+
+        # 流式输出回调
+        def stream_callback(status, msg_fragment):
+            # status 0:splash 1:increment 2:finish
+            global stream_out_content
+
+            print(msg_fragment.decode("utf-8"))
+            stream_out_content += msg_fragment.decode("utf-8")
+
+        chat_with_agents(mid, option.query, option.history_messages, stream_callback=stream_callback)
+    else:
+        query = option.query
+        history_messages = option.history_messages
+        received_value = stdout_result(
+            query=query,
+            history_messages=history_messages,
+            model=option.model,
+            streaming=option.stream,
+            temperature=option.temperature
+        )
+        stream_out_content = received_value
 
 
 @app.post("/v1/chat/completions")
@@ -100,13 +146,21 @@ async def create_chat_completion(request: ChatCompletionRequest):
         chat_history.append({"role": role, "content": content})
 
     if request.stream:
-        received_value = stdout_result(
+        # received_value = stdout_result(
+        #     query=query,
+        #     history_messages=history_messages,
+        #     model=request.model,
+        #     streaming=request.stream,
+        #     temperature=request.temperature
+        # )
+        selected_executor_agent(option=ChatAgent(
             query=query,
             history_messages=history_messages,
             model=request.model,
             streaming=request.stream,
-            temperature=request.temperature
-        )
+            temperature=request.temperature,
+            flowy=False
+        ))
 
         async def event_generator():
             # 定义流式输出的设置
@@ -121,7 +175,8 @@ async def create_chat_completion(request: ChatCompletionRequest):
             yield "{}".format(json.dumps(chunk.model_dump(exclude_unset=True), ensure_ascii=False))
 
             start_time = time.time()
-            for incremental_text in received_value:
+            # for incremental_text in received_value:
+            for incremental_text in stream_out_content:
                 # if await request.is_disconnected():
                 #     print("连接已中断...")
                 #     break

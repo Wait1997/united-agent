@@ -88,6 +88,8 @@ def write_docx(doc_path: str, doc_content: str):
 
     doc = Document()
 
+    doc.encoding = 'utf-8'
+
     """添加标题"""
     # para_head = doc.add_heading("标题", level=1)  # level代表标题级别
     # para_head.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER  # 标题居中
