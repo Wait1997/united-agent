@@ -96,7 +96,8 @@ def executor_llm_agent(
     # create_tool_calling_agent 使用其他的 会导致tool中参数不能正常输入
     chat_prompt = ChatPromptTemplate.from_messages(
         [
-            SystemMessagePromptTemplate.from_template('You are a helpful assistant'),
+            SystemMessagePromptTemplate.from_template('You are a helpful assistant! '
+                                                      'Answer the questions according to your ability and use Chinese'),
             MessagesPlaceholder(variable_name='chat_history', optional=True),
             HumanMessagePromptTemplate.from_template('{input}'),
             MessagesPlaceholder(variable_name='agent_scratchpad')
@@ -114,7 +115,7 @@ def executor_llm_agent(
         )
         return agent_executor
 
-    agent_executor = agent_executor_option()
+    agent_executor = agent_executor_option(verbose=True)
 
     return agent_executor
 
@@ -148,15 +149,19 @@ def stdout_result(
 
 if __name__ == '__main__':
     agent_with_chat_history = executor_llm_agent(streaming=False)
-    # result = agent_with_chat_history.invoke({'input': '帮我把 Visual Studio Code 打开'})
+    result = agent_with_chat_history.invoke({'input': '帮我把 Visual Studio Code 打开'})
     # result = agent_with_chat_history.invoke({'input': '帮我把QQ音乐打开'})
     # result = agent_with_chat_history.invoke({'input': '帮我把 Visual Studio Code 打开,并且系统的亮度设置到50'})
     # result = agent_with_chat_history.invoke({'input': '帮我写一份pytorch简单的使用教程，需要把内容写到指定的markdown文件中'})
     # result = agent_with_chat_history.invoke({'input': '帮我把系统音量调小', 'chat_history': []})
     # result = agent_with_chat_history.invoke({'input': '帮我整理最近7天未使用的文件', 'chat_history': []})
     # result = agent_with_chat_history.invoke({'input': '帮我把计算器打开', 'chat_history': []})
-    result = agent_with_chat_history.invoke({
-        'input': '帮我介绍一下google公司，需要800字左右；并且要求你按照word文档的格式写入到文件中，输入的内容能够符合正常word文档的规范',
-        'chat_history': []}
-    )
+    # result = agent_with_chat_history.invoke({
+    #     'input': '帮我介绍一下google公司，需要800字左右；并且要求你按照word文档的格式写入到文件中，输入的内容能够符合正常word文档的规范',
+    #     'chat_history': []}
+    # )
+    # result = agent_with_chat_history.invoke({
+    #     'input': '你好',
+    #     'chat_history': []}
+    # )
     print(result['output'])
