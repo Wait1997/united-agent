@@ -7,7 +7,7 @@ __pycache__
 .vscode
 .DS_Store
 
-start_assistant.py
+# run_assistant.py
 flowy.dll
 
 build/*

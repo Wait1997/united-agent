@@ -79,17 +79,17 @@ def executor_llm_agent(
         llm = ChatOpenAI(
             temperature=temperature,
             model=model,
-            openai_api_key=zhipu_key,
-            openai_api_base=openai_api_base,
+            api_key=zhipu_key,
+            base_url=openai_api_base,
             streaming=streaming,
             callback_manager=CallbackManager([StreamingStdOutCallbackHandler()])
         )
     else:
         llm = ChatOpenAI(
-            temperature=0.95,
+            temperature=temperature,
             model=model,
-            openai_api_key=zhipu_key,
-            openai_api_base=openai_api_base
+            api_key=zhipu_key,
+            base_url=openai_api_base
         )
 
     # agent = create_react_agent(llm, tools, prompt)
@@ -114,7 +114,7 @@ def executor_llm_agent(
         )
         return agent_executor
 
-    agent_executor = agent_executor_option()
+    agent_executor = agent_executor_option(verbose=True)
 
     return agent_executor
 
@@ -155,8 +155,9 @@ if __name__ == '__main__':
     # result = agent_with_chat_history.invoke({'input': '帮我把系统音量调小', 'chat_history': []})
     # result = agent_with_chat_history.invoke({'input': '帮我整理最近7天未使用的文件', 'chat_history': []})
     # result = agent_with_chat_history.invoke({'input': '帮我把计算器打开', 'chat_history': []})
-    result = agent_with_chat_history.invoke({
-        'input': '帮我介绍一下google公司，需要800字左右；并且要求你按照word文档的格式写入到文件中，输入的内容能够符合正常word文档的规范',
-        'chat_history': []}
-    )
-    print(result['output'])
+    # result = agent_with_chat_history.invoke({
+    #     'input': '帮我介绍一下google公司，需要800字左右；并且要求你按照word文档的格式写入到文件中，输入的内容能够符合正常word文档的规范',
+    #     'chat_history': []}
+    # )
+    result = agent_with_chat_history.invoke({'input': '你好'})
+    print(result)
