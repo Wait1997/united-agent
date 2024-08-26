@@ -1,5 +1,6 @@
 import re
 from typing import Dict, Union, Optional
+from utils import get_os_type
 
 
 class BasicMatcher:
@@ -8,11 +9,22 @@ class BasicMatcher:
         if default_patterns is None:
             default_patterns = {}
 
-        self.default_patterns = {
-            "Notes": r'(?i)\b(Note|Notes|Memo|备忘录|笔记|便笺)\b',
-            "Visual Studio Code": r'(?i)(Visual Studio Code|VisualStudioCode|vscode|vs code)',
-            **default_patterns
-        }
+        # 获取当前操作系统类型
+        self.os_type = get_os_type()
+        if self.os_type == 'Windows':
+            self.default_patterns = {
+                "Notes": r'(?i)\b(Note|Notes|Memo|备忘录|笔记|便笺)\b',
+                "code": r'(?i)(Visual Studio Code|VisualStudioCode|vscode|vs code|code)',
+                **default_patterns
+            }
+        elif self.os_type == 'macOS':
+            self.default_patterns = {
+                "Notes": r'(?i)\b(Note|Notes|Memo|备忘录|笔记|便笺)\b',
+                "Visual Studio Code": r'(?i)(Visual Studio Code|VisualStudioCode|vscode|vs code|code)',
+                **default_patterns
+            }
+        else:
+            raise EnvironmentError('Unsupported platform.')
         self.app_patterns = self.default_patterns.copy()  # 初始化时使用默认规则
 
     def add_rule(self, app_name: str, pattern: str):
